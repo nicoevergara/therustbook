@@ -38,4 +38,29 @@ The following are the 3 traits that can be implemented on a closure (from the bo
 - **FnMut** applies to closures that don’t move captured values out of their body but might mutate the captured values. These closures can be called more than once.
 - **Fn** applies to closures that don’t move captured values out of their body and don’t mutate captured values, as well as closures that capture nothing from their environment. These closures can be called more than once without mutating their environment, which is important in cases such as calling a closure multiple times concurrently.
 
-**Iterators**
+**Iterators** in Rust are the same as those in other languages, allowing for a sequence of items to be iterated over while performing a particular action.
+
+One distinction in Rust is that they are _lazy by default_, meaning they won't have an effect until a method is called to consume the iterator.
+
+The `Iterator` trait is defined in the standard library as the following (from the Rust book):
+
+```rust
+pub trait Iterator {
+    type Item;
+
+    fn next(&mut self) -> Option<Self::Item>;
+
+    // methods with default implementations elided
+}
+```
+
+To create the iterator over a collection that implements the `Iterator` trait, we can use `.iter()` to get an iterator that provides _immutable references_, `.iter_mut()` to get one that iterates over _mutable references_, and `.iter_into()` to get one that provides _owned values_.
+
+Methods that call the `next` method, as shown above and that we need to implement, are called _consuming adapters_ because calling them consumes / uses up the iterator.
+
+Methods that don't consume the iterator but produce iterators based on aspects of the original iterator are called _iterator adapters_, such as the `map` method.
+
+To consume the iterator after calling an _iterator adapter_, we need to call `.consume()` due to the fact that iterators are lazy.
+
+**Performance of loops versus iterators** are negligibly different. Iterators are considered a _zero-cost abstraction_, meaning that they will boil down to the same code once compiled as would be generated for a `for` loop.
+
